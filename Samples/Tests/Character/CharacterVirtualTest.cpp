@@ -68,19 +68,21 @@ void CharacterVirtualTest::PrePhysicsUpdate(const PreUpdateParams &inParams)
 
 void CharacterVirtualTest::HandleInput(Vec3Arg inMovementDirection, bool inJump, bool inSwitchStance, float inDeltaTime)
 {
+	Vec3 movement_direction = inMovementDirection;
+
 	// Cancel movement in opposite direction of normal when sliding
 	CharacterVirtual::EGroundState ground_state = mCharacter->GetGroundState();
 	if (ground_state == CharacterVirtual::EGroundState::Sliding)
 	{
 		Vec3 normal = mCharacter->GetGroundNormal();
 		normal.SetY(0.0f);
-		float dot = normal.Dot(inMovementDirection);
+		float dot = normal.Dot(movement_direction);
 		if (dot < 0.0f)
-			inMovementDirection -= (dot * normal) / normal.LengthSq();
+			movement_direction -= (dot * normal) / normal.LengthSq();
 	}
 
 	// Smooth the player input
-	mSmoothMovementDirection = 0.25f * inMovementDirection + 0.75f * mSmoothMovementDirection;
+	mSmoothMovementDirection = 0.25f * movement_direction + 0.75f * mSmoothMovementDirection;
 
 	Vec3 current_vertical_velocity = Vec3(0, mCharacter->GetLinearVelocity().GetY(), 0);
 

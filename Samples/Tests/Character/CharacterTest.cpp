@@ -69,20 +69,22 @@ void CharacterTest::RestoreState(StateRecorder &inStream)
 
 void CharacterTest::HandleInput(Vec3Arg inMovementDirection, bool inJump, bool inSwitchStance, float inDeltaTime)
 {
+	Vec3 movement_direction = inMovementDirection;
+
 	// Cancel movement in opposite direction of normal when sliding
 	Character::EGroundState ground_state = mCharacter->GetGroundState();
 	if (ground_state == Character::EGroundState::Sliding)
 	{
 		Vec3 normal = mCharacter->GetGroundNormal();
 		normal.SetY(0.0f);
-		float dot = normal.Dot(inMovementDirection);
+		float dot = normal.Dot(movement_direction);
 		if (dot < 0.0f)
-			inMovementDirection -= (dot * normal) / normal.LengthSq();
+			movement_direction -= (dot * normal) / normal.LengthSq();
 	}
 
 	// Update velocity
 	Vec3 current_velocity = mCharacter->GetLinearVelocity();
-	Vec3 desired_velocity = cCharacterSpeed * inMovementDirection;
+	Vec3 desired_velocity = cCharacterSpeed * movement_direction;
 	desired_velocity.SetY(current_velocity.GetY());
 	Vec3 new_velocity = 0.75f * current_velocity + 0.25f * desired_velocity;
 
